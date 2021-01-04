@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SORTING ALGORITHMS</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="canvasContainer">
+            <canvas class="canvasClass" id="mainCanvas" ></canvas>
+        </div>
+        <div class="customSlider">
+            <input type="range" min="2" max="400" value="10" class="slider" id="elementsAmount">
+            <p>ELEMENTS: <span id="values"></span></p>
+            <button class="sortButton" onclick="perform()">
+                SORT
+            </button>
+            <div class="groupSelector" id="sorterSelector">
+                <label class="radioLabel">
+                    <input name="sortType" type="radio" id="insert_sort" value="1" checked>
+                    INSERT SORT
+                </label>
+                <label class="radioLabel">
+                    <input name="sortType" type="radio" id="quick_sort" value="2">
+                    QUICK SORT
+                </label>
+                <label class="radioLabel">
+                    <input name="sortType" type="radio" id="heap_sort" value="3">
+                    HEAP SORT
+                </label>
+            </div>
+        </div>
+
+        <script src="Sorters.js"></script>
+        <script>
+            //Variables init block==================
+            var canvas = document.getElementById("mainCanvas");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            var ctx = canvas.getContext("2d");
+            var slider = document.getElementById("elementsAmount");
+            var outputField = document.getElementById("values");
+            var sorterRadioFiled = document.getElementById("sorterSelector");
+
+            outputField.innerHTML = slider.value;
+            var N = slider.value;
+            var vals;
+            var sorterType = "insert_sort";
+
+            vals = new Array(N);
+            for (let i = 0; i < N; i++) {
+                vals[i] = new Item(randValueRange(1, 500), false);
+            }
+
+            var sorter = SortersFactory.getInstance(sorterType, vals);
+            var updater = new CanvasUpdate(canvas, sorter, ctx);
+            //Variables init block ends==============
+
+            updater.update(); //perform first update so user can see an array right away.
+
+
+            /*
+            On each change of slider input we
+            regenerate new array of Items.
+            */
+            slider.oninput = function() {
+                outputField.innerHTML = this.value;
+                N = this.value;
+                vals = new Array(N);
+                for (let i = 0; i < N; i++) {
+                    vals[i] = new Item(randValueRange(1, 450), false);
+                }
+
+                sorter.setValues(vals);
+                updater.update();
+            }
+
+            /*
+            Performs sort by clicking a button.
+            Instanciates a sorter via Factory.
+            */
+            perform = () => {
+                sorter = SortersFactory.getInstance(sorterType, vals);
+                updater.setSorter(sorter);
+                sorter.sort();
+                updater.update();
+            }
+
+
+            /*
+            sets onChange listener in sorter radio buttons group.
+            Sets up the sorterType value based on choice.
+            */
+            sorterRadioFiled.addEventListener("change", function(event) {
+                let target = event.target;
+                sorterType = target.id;
+            });
+
+            /*
+            sets onResize listener to keep track of
+            window size changes and set canvas width
+            and height accordingly.
+            */
+            window.addEventListener("resize", function(event) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                updater.update();
+            });
+        </script>
+    </body>
+</html>
