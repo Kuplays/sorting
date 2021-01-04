@@ -1,4 +1,4 @@
-# SORTING ALGORITHMS VISUALISATION
+# SORTING ALGORITHMS VISUALIZATION
 ![Example](/visualSort.jpg)
 Visual implementation of three given algorithms:
 - INSERTION SORT;
